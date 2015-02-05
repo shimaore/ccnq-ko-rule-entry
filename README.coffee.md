@@ -4,17 +4,6 @@ A Knockout Widget for CCNQ(4) `rule` entry
 This Knockout component manages a single `rule` entry as stored in a CCNQ4 `ruleset` database.
 The layout of the record is adapted to the [`tough-rate`](https://github.com/shimaore/tough-rate) LCR routing engine.
 
-A `rule` record must contain:
-- _id: "rule:#{prefix}"
-- type: "rule"
-- prefix: prefix
-- attrs: { cdr }
-- gwlist: [ { ...}, {...}]
-with possible gateways:
-{ source_registrant:true }
-{ carrierid }
-{ gwid }
-
     module.exports = (ko) ->
 
       class RuleEntry
@@ -47,8 +36,18 @@ FIXME: I'm still quite confused about how KnockoutJS handles `this`, and why `ad
             @gwlist.remove target
           @save = =>
             @error "Saving... (#{doc._rev})"
-            doc._id ?= "rule:#{@prefix}"
-            doc.type ?= 'rule'
+
+A `rule` record must contain:
+
+            doc._id = "rule:#{@prefix()}"
+            doc.type = 'rule'
+            doc.prefix = @prefix()
+            doc.gwlist = @gwlist()
+            doc.attrs ?= {}
+            doc.attrs.cdr = @cdr()
+
+Save the record.
+
             @ruleset_db.put @doc
             .then ({rev}) =>
               @doc._rev = rev

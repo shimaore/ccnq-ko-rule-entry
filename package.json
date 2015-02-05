@@ -1,6 +1,6 @@
 {
   "name": "ccnq-ko-rule-entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CCNQ Knockout Widget for rule entry",
   "main": "index.js",
   "scripts": {

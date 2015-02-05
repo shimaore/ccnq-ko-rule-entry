@@ -57,7 +57,7 @@ Save the record.
             .catch (error) =>
               @error "Not saved: #{error} on #{JSON.stringify @doc}"
 
-          add_gw = =>
+          @add_gw = =>
             @gwlist.push new RuleTarget({data:{},$root})
 
 Layout

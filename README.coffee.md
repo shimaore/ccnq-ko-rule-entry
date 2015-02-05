@@ -35,6 +35,7 @@ Data
           @sip_domain_name = sip_domain_name
           @gwlist = ko.observableArray doc.gwlist
 
+          @doc = doc
           @ruleset_db = ruleset_db
 
           @error = ko.observable ''
@@ -50,9 +51,9 @@ FIXME: I'm still quite confused about how KnockoutJS handles `this`, and why `ad
           @gwlist.push {}
         save: ->
           @error "Saving... (#{doc._rev})"
-          @ruleset_db.put doc
+          @ruleset_db.put @doc
           .then ({rev}) =>
-            doc._rev = rev
+            @doc._rev = rev
             @error 'Saved...'
           .catch (error) ->
             @error "Not saved: #{error}"
@@ -89,7 +90,7 @@ Layout
             div ->
 
 We use the custom `rule-target` component here.
-FIXME: Is there a way to access `$root` from within the constructor of RuleTarget (in the ccnq-ko-rule-target project) instead of having to pass them along here?
+FIXME: Is there a way to access `$root` from within the constructor of RuleTarget (in the ccnq-ko-rule-target project) instead of having to pass them along here? (Same question applies to `ruleset_db` in RuleEntry!)
 
               tag 'rule-target', params: 'data: $data, gateways: $root.gateways, carriers: $root.carriers'
               button bind: click: '$parent.remove_gw', 'Remove'

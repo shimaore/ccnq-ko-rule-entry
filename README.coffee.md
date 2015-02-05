@@ -46,12 +46,12 @@ A `rule` record must contain:
 
 Save the record.
 
-            ruleset_db.put @doc
+            ruleset_db.put doc
             .then ({rev}) =>
-              @doc._rev = rev
+              doc._rev = rev
               @error 'Saved...'
             .catch (error) =>
-              @error "Not saved: #{error} on #{JSON.stringify @doc}"
+              @error "Not saved: #{error} on #{JSON.stringify doc}"
 
 Add a new (empty) target.
 FIXME: should select a default type based on existing targets (e.g. only one `source_registrant` makes sense).

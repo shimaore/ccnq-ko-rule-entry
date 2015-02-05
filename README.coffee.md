@@ -7,10 +7,8 @@ The layout of the record is adapted to the [`tough-rate`](https://github.com/shi
     module.exports = (ko) ->
 
       class RuleEntry
-        constructor: ({doc,$root}) ->
-          {ruleset_db} = $root
+        constructor: (doc) ->
           assert doc?, 'doc is required'
-          assert ruleset_db?, 'ruleset_db is required'
           assert doc?.prefix?, 'doc.prefix is required'
           assert doc?.attrs?.cdr?, 'doc.attrs.cdr is required'
 
@@ -18,46 +16,74 @@ Data
 ----
 
           @prefix = doc.prefix
-
           @cdr = ko.observable doc.attrs.cdr
           @gwlist = ko.observableArray []
           if doc.gwlist?
             for data in doc.gwlist
               @gwlist.push new RuleTarget data
 
-          @error = ko.observable ''
+We also provide the original document so that any other (extra) field is kept.
 
-Behavior
---------
-
-          @remove_gw = (target) =>
-            @gwlist.remove target
-          @save = =>
-            @error "Saving... (#{doc._rev})"
-
-A `rule` record must contain:
-
+          @update_doc = =>
             doc._id = "rule:#{@prefix}"
             doc.type = 'rule'
             doc.prefix = @prefix
             doc.gwlist = ko.toJS @gwlist
             doc.attrs ?= {}
             doc.attrs.cdr = @cdr()
+            doc
 
-Save the record.
+          return
 
-            ruleset_db.put doc
-            .then ({rev}) =>
-              doc._rev = rev
-              @error 'Saved...'
-            .catch (error) =>
-              @error "Not saved: #{error} on #{JSON.stringify doc}"
+Model
+-----
+
+      view = ({value,$root}) ->
+        assert value instanceof RuleEntry, 'value should be an instance of RuleEntry'
+        {ruleset_db} = $root
+        assert ruleset_db?, 'ruleset_db is required'
+
+        @gwlist = value.gwlist
+        @prefix = value.prefix
+        @cdr = value.cdr
+
+        @notify = ko.observable ''
 
 Add a new (empty) target.
 FIXME: should select a default type based on existing targets (e.g. only one `source_registrant` makes sense).
 
-          @add_gw = =>
-            @gwlist.push new RuleTarget {}
+        @add_gw = =>
+          @gwlist.push new RuleTarget {}
+
+Remove an existing target.
+
+        @remove_gw = (target) =>
+          @gwlist.remove target
+
+Remove all invalid targets (so that what is shown on the UI is what will be saved)
+
+        @clean_gwlist = =>
+          for target in @gwlist()
+            if not target._validated()
+              @remove_gw target
+
+        @save = =>
+          @notify "Saving... (#{value._rev()})"
+
+          @clean_gwlist()
+
+          doc = value.update_doc()
+
+Save the record.
+
+          ruleset_db.put doc
+          .then ({rev}) =>
+            doc._rev = rev
+            @notify 'Saved...'
+          .catch (error) =>
+            @notify "Not saved: #{error} on #{JSON.stringify doc}"
+
+        return
 
 Layout
 ------
@@ -96,8 +122,9 @@ FIXME: Is there a way to access `$root` from within the constructor of RuleTarge
               tag 'rule-target', params: 'value:$data,$root:$root'
               button bind: click: '$parent.remove_gw', 'Remove'
           button bind: click: 'add_gw', 'Add'
+          button bind: click: 'clean_gwlist', 'Cleanup'
           button bind: click: 'save', 'Save'
-        div '.error', bind: text: 'error', '(log)'
+        div '.log', bind: text: 'notify', '(log)'
 
 Extend Knockout witht the `rule-target` component/tag.
 

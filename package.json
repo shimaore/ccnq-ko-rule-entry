@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/shimaore/ccnq-ko-rule-entry",
   "dependencies": {
-    "ccnq-ko-rule-target": "^2.0.0",
+    "ccnq-ko-rule-target": "^2.1.0",
     "knockout": "^3.2.0",
     "teacup": "^1.0.0",
     "teacup-databind": "^1.0.1"

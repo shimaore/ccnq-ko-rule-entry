@@ -54,7 +54,7 @@ FIXME: I'm still quite confused about how KnockoutJS handles `this`, and why `ad
               @doc._rev = rev
               @error 'Saved...'
             .catch (error) =>
-              @error "Not saved: #{error}"
+              @error "Not saved: #{error} on #{JSON.stringify @doc}"
 
         add_gw: ->
           @gwlist.push {}

@@ -8,10 +8,9 @@ The layout of the record is adapted to the [`tough-rate`](https://github.com/shi
 
       class RuleEntry
         constructor: ({doc,$root}) ->
-          {ruleset_db,sip_domain_name} = $root
+          {ruleset_db} = $root
           assert doc?, 'doc is required'
           assert ruleset_db?, 'ruleset_db is required'
-          assert sip_domain_name?, 'sip_domain_name is required'
           assert doc?.prefix?, 'doc.prefix is required'
           assert doc?.attrs?.cdr?, 'doc.attrs.cdr is required'
 
@@ -19,7 +18,6 @@ Data
 ----
 
           @prefix = doc.prefix
-          @sip_domain_name = sip_domain_name
 
           @cdr = ko.observable doc.attrs.cdr
           @gwlist = ko.observableArray []
@@ -27,15 +25,10 @@ Data
             for data in doc.gwlist
               @gwlist.push new RuleTarget {data,$root}
 
-          @doc = doc
-          @ruleset_db = ruleset_db
-
           @error = ko.observable ''
 
 Behavior
 --------
-
-FIXME: I'm still quite confused about how KnockoutJS handles `this`, and why `add_gw` can be a simple object method, while it seems `remove_gw` needs to be an instance method.
 
           @remove_gw = (target) =>
             @gwlist.remove target
@@ -53,12 +46,15 @@ A `rule` record must contain:
 
 Save the record.
 
-            @ruleset_db.put @doc
+            ruleset_db.put @doc
             .then ({rev}) =>
               @doc._rev = rev
               @error 'Saved...'
             .catch (error) =>
               @error "Not saved: #{error} on #{JSON.stringify @doc}"
+
+Add a new (empty) target.
+FIXME: should select a default type based on existing targets (e.g. only one `source_registrant` makes sense).
 
           @add_gw = =>
             @gwlist.push new RuleTarget({data:{},$root})

@@ -22,7 +22,10 @@ Data
           @sip_domain_name = sip_domain_name
 
           @cdr = ko.observable doc.attrs.cdr
-          @gwlist = ko.observableArray doc.gwlist
+          @gwlist = ko.observableArray []
+          if doc.gwlist?
+            for data in doc.gwlist
+              @gwlist.push new RuleTarget {data,$root}
 
           @doc = doc
           @ruleset_db = ruleset_db
@@ -44,7 +47,7 @@ A `rule` record must contain:
             doc._id = "rule:#{@prefix}"
             doc.type = 'rule'
             doc.prefix = @prefix
-            doc.gwlist = @gwlist()
+            doc.gwlist = ko.toJS @gwlist
             doc.attrs ?= {}
             doc.attrs.cdr = @cdr()
 

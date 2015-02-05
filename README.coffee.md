@@ -7,7 +7,8 @@ The layout of the record is adapted to the [`tough-rate`](https://github.com/shi
     module.exports = (ko) ->
 
       class RuleEntry
-        constructor: ({doc,sip_domain_name,ruleset_db}) ->
+        constructor: ({doc,$root}) ->
+          {ruleset_db,sip_domain_name} = $root
           assert doc?, 'doc is required'
           assert ruleset_db?, 'ruleset_db is required'
           assert sip_domain_name?, 'sip_domain_name is required'
@@ -56,8 +57,8 @@ Save the record.
             .catch (error) =>
               @error "Not saved: #{error} on #{JSON.stringify @doc}"
 
-        add_gw: ->
-          @gwlist.push {}
+          add_gw = =>
+            @gwlist.push new RuleTarget({data:{},$root})
 
 Layout
 ------
@@ -93,7 +94,7 @@ Layout
 We use the custom `rule-target` component here.
 FIXME: Is there a way to access `$root` from within the constructor of RuleTarget (in the ccnq-ko-rule-target project) instead of having to pass them along here? (Same question applies to `ruleset_db` in RuleEntry!)
 
-              tag 'rule-target', params: 'data: $data, gateways: $root.gateways, carriers: $root.carriers'
+              tag 'rule-target', params: 'data: $data, $root:$root'
               button bind: click: '$parent.remove_gw', 'Remove'
           button bind: click: 'add_gw', 'Add'
           button bind: click: 'save', 'Save'
@@ -101,7 +102,7 @@ FIXME: Is there a way to access `$root` from within the constructor of RuleTarge
 
 Extend Knockout witht the `rule-target` component/tag.
 
-      (require 'ccnq-ko-rule-target') ko
+      RuleTarget = (require 'ccnq-ko-rule-target') ko
 
 Register the `rule-entry` component/tag.
 

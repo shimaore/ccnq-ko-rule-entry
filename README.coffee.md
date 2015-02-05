@@ -47,16 +47,17 @@ FIXME: I'm still quite confused about how KnockoutJS handles `this`, and why `ad
 
           @remove_gw = (target) =>
             @gwlist.remove target
+          @save = =>
+            @error "Saving... (#{doc._rev})"
+            @ruleset_db.put @doc
+            .then ({rev}) =>
+              @doc._rev = rev
+              @error 'Saved...'
+            .catch (error) =>
+              @error "Not saved: #{error}"
+
         add_gw: ->
           @gwlist.push {}
-        save: ->
-          @error "Saving... (#{doc._rev})"
-          @ruleset_db.put @doc
-          .then ({rev}) =>
-            @doc._rev = rev
-            @error 'Saved...'
-          .catch (error) ->
-            @error "Not saved: #{error}"
 
 Layout
 ------

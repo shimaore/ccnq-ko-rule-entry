@@ -28,8 +28,6 @@ with possible gateways:
 Data
 ----
 
-          doc._id ?= "rule:#{@prefix}"
-          doc.type ?= 'rule'
           @prefix = doc.prefix
           @cdr = doc.attrs.cdr
           @sip_domain_name = sip_domain_name
@@ -49,6 +47,8 @@ FIXME: I'm still quite confused about how KnockoutJS handles `this`, and why `ad
             @gwlist.remove target
           @save = =>
             @error "Saving... (#{doc._rev})"
+            doc._id ?= "rule:#{@prefix}"
+            doc.type ?= 'rule'
             @ruleset_db.put @doc
             .then ({rev}) =>
               @doc._rev = rev

@@ -18,8 +18,9 @@ Data
 ----
 
           @prefix = doc.prefix
-          @cdr = doc.attrs.cdr
           @sip_domain_name = sip_domain_name
+
+          @cdr = ko.observable doc.attrs.cdr
           @gwlist = ko.observableArray doc.gwlist
 
           @doc = doc
@@ -39,9 +40,9 @@ FIXME: I'm still quite confused about how KnockoutJS handles `this`, and why `ad
 
 A `rule` record must contain:
 
-            doc._id = "rule:#{@prefix()}"
+            doc._id = "rule:#{@prefix}"
             doc.type = 'rule'
-            doc.prefix = @prefix()
+            doc.prefix = @prefix
             doc.gwlist = @gwlist()
             doc.attrs ?= {}
             doc.attrs.cdr = @cdr()

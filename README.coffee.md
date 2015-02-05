@@ -23,7 +23,7 @@ Data
           @gwlist = ko.observableArray []
           if doc.gwlist?
             for data in doc.gwlist
-              @gwlist.push {data,$root}
+              @gwlist.push data
 
           @error = ko.observable ''
 
@@ -57,7 +57,7 @@ Add a new (empty) target.
 FIXME: should select a default type based on existing targets (e.g. only one `source_registrant` makes sense).
 
           @add_gw = =>
-            @gwlist.push {data:{},$root}
+            @gwlist.push {}
 
 Layout
 ------
@@ -93,7 +93,7 @@ Layout
 We use the custom `rule-target` component here.
 FIXME: Is there a way to access `$root` from within the constructor of RuleTarget (in the ccnq-ko-rule-target project) instead of having to pass them along here? (Same question applies to `ruleset_db` in RuleEntry!)
 
-              tag 'rule-target', params: 'data:data,$root:$root'
+              tag 'rule-target', params: 'data:$data,$root:$root'
               button bind: click: '$parent.remove_gw', 'Remove'
           button bind: click: 'add_gw', 'Add'
           button bind: click: 'save', 'Save'

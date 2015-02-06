@@ -17,11 +17,14 @@ Data
 
           @prefix = @doc.prefix
           @cdr = ko.observable @doc.attrs.cdr
+          @reset_gw_list()
+          return
+
+        reset_gw_list: ->
           @gwlist = ko.observableArray []
           if @doc.gwlist?
             for data in @doc.gwlist
               @gwlist.push new RuleTarget data
-          return
 
 We also provide the original document so that any other (extra) field is kept.
 
@@ -29,7 +32,8 @@ We also provide the original document so that any other (extra) field is kept.
           @doc._id = "rule:#{@prefix}"
           @doc.type = 'rule'
           @doc.prefix = @prefix
-          @doc.gwlist = ko.toJS @gwlist
+          @doc.gwlist = (ko.toJS @gwlist).filter (x) -> x._validated
+          @reset_gw_list()
           @doc.attrs ?= {}
           @doc.attrs.cdr = @cdr()
           @doc
@@ -55,17 +59,8 @@ Remove an existing target.
         @remove_gw = (target) =>
           @gwlist.remove target
 
-Remove all invalid targets (so that what is shown on the UI is what will be saved)
-
-        @clean_gwlist = =>
-          for target in @gwlist()
-            if not target._validated()
-              @remove_gw target
-
         @save = =>
           @notify "Saving... (#{value._rev()})"
-
-          @clean_gwlist()
 
           doc = value.update_doc()
 
@@ -116,7 +111,6 @@ FIXME: Is there a way to access `$root` from within the constructor of RuleTarge
               rule_target '$data'
               button bind: click: '$parent.remove_gw', 'Remove'
           button bind: click: 'add_gw', 'Add'
-          button bind: click: 'clean_gwlist', 'Cleanup'
           button bind: click: 'save', 'Save'
         div '.log', bind: text: 'notify', '(log)'
 

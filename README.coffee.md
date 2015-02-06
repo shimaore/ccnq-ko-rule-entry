@@ -29,7 +29,7 @@ We also provide the original document so that any other (extra) field is kept.
           @doc._id = "rule:#{@prefix}"
           @doc.type = 'rule'
           @doc.prefix = @prefix
-          @gwlist.remove (x) -> !x._validated
+          @gwlist.remove (x) -> !x._validated()
           @doc.gwlist = ko.toJS @gwlist
           @doc.attrs ?= {}
           @doc.attrs.cdr = @cdr()

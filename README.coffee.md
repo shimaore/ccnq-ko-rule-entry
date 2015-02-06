@@ -6,6 +6,12 @@ The layout of the record is adapted to the [`tough-rate`](https://github.com/shi
 
     module.exports = (ko) ->
 
+      tag_name = 'rule-entry'
+
+      rule_entry = (f) ->
+        {tag} = teacup
+        tag tag_name, params: "doc:#{f},$root:$root"
+
       class RuleEntry
         constructor: (doc) ->
           assert doc?, 'doc is required'
@@ -132,11 +138,11 @@ Extend Knockout witht the `rule-target` component/tag.
 
 Register the `rule-entry` component/tag.
 
-      ko.components.register 'rule-entry',
+      ko.components.register tag_name,
         viewModel: RuleEntry
         template: teacup.render html
 
-      RuleEntry
+      {RuleEntry,rule_entry}
 
     teacup = require 'teacup'
     teacup.use (require 'teacup-databind')()

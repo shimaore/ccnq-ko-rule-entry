@@ -139,7 +139,7 @@ Extend Knockout witht the `rule-target` component/tag.
 Register the `rule-entry` component/tag.
 
       ko.components.register tag_name,
-        viewModel: RuleEntry
+        viewModel: view
         template: teacup.render html
 
       {RuleEntry,rule_entry}

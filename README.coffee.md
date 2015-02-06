@@ -119,7 +119,7 @@ Layout
 We use the custom `rule-target` component here.
 FIXME: Is there a way to access `$root` from within the constructor of RuleTarget (in the ccnq-ko-rule-target project) instead of having to pass them along here? (Same question applies to `ruleset_db` in RuleEntry!)
 
-              tag 'rule-target', params: 'value:$data,$root:$root'
+              rule_target '$data'
               button bind: click: '$parent.remove_gw', 'Remove'
           button bind: click: 'add_gw', 'Add'
           button bind: click: 'clean_gwlist', 'Cleanup'
@@ -128,7 +128,7 @@ FIXME: Is there a way to access `$root` from within the constructor of RuleTarge
 
 Extend Knockout witht the `rule-target` component/tag.
 
-      RuleTarget = (require 'ccnq-ko-rule-target') ko
+      {RuleTarget,rule_target} = (require 'ccnq-ko-rule-target') ko
 
 Register the `rule-entry` component/tag.
 

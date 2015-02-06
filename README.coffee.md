@@ -60,9 +60,9 @@ Remove an existing target.
           @gwlist.remove target
 
         @save = =>
-          @notify "Saving... (#{value._rev()})"
-
           doc = value.update_doc()
+
+          @notify "Saving... (#{doc._rev()})"
 
 Save the record.
 

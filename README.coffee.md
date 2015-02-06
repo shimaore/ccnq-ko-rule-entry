@@ -83,7 +83,7 @@ Layout
           button bind: click: 'save', 'Save'
         div '.log', bind: text: 'notify', '(log)'
 
-Extend Knockout witht the `rule-target` component/tag.
+Extend Knockout witht the `rule-gwlist` component/tag.
 
       {RuleGwlist,rule_gwlist} = (require 'ccnq-ko-rule-gwlist') ko
 

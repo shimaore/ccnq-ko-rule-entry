@@ -17,14 +17,11 @@ Data
 
           @prefix = @doc.prefix
           @cdr = ko.observable @doc.attrs.cdr
-          @reset_gw_list()
-          return
-
-        reset_gw_list: ->
           @gwlist = ko.observableArray []
           if @doc.gwlist?
             for data in @doc.gwlist
               @gwlist.push new RuleTarget data
+          return
 
 We also provide the original document so that any other (extra) field is kept.
 
@@ -32,8 +29,8 @@ We also provide the original document so that any other (extra) field is kept.
           @doc._id = "rule:#{@prefix}"
           @doc.type = 'rule'
           @doc.prefix = @prefix
-          @doc.gwlist = (ko.toJS @gwlist).filter (x) -> x._validated
-          @reset_gw_list()
+          @doc.gwlist.remove (x) -> !x._validated
+          @doc.gwlist = ko.toJS @gwlist
           @doc.attrs ?= {}
           @doc.attrs.cdr = @cdr()
           @doc

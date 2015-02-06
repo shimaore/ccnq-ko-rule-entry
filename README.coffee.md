@@ -4,54 +4,43 @@ A Knockout Widget for CCNQ(4) `rule` entry
 This Knockout component manages a single `rule` entry as stored in a CCNQ4 `ruleset` database.
 The layout of the record is adapted to the [`tough-rate`](https://github.com/shimaore/tough-rate) LCR routing engine.
 
-    module.exports = (ko) ->
-
-      tag_name = 'rule-entry'
-
-      rule_entry = (f) ->
-        {tag} = teacup
-        tag tag_name, params: "value:#{f},$root:$root"
-
-      class RuleEntry
-        constructor: (doc) ->
-          assert doc?, 'doc is required'
-          assert doc?.prefix?, 'doc.prefix is required'
-          assert doc?.attrs?.cdr?, 'doc.attrs.cdr is required'
+    module.exports = (require 'ccnq-ko') 'rule-entry', (ko) ->
 
 Data
 ----
 
-          @prefix = doc.prefix
-          @cdr = ko.observable doc.attrs.cdr
+      @data class RuleEntry
+        constructor: (@doc) ->
+          assert @doc?, 'doc is required'
+          assert @doc?.prefix?, 'doc.prefix is required'
+          assert @doc?.attrs?.cdr?, 'doc.attrs.cdr is required'
+
+          @prefix = @doc.prefix
+          @cdr = ko.observable @doc.attrs.cdr
           @gwlist = ko.observableArray []
-          if doc.gwlist?
-            for data in doc.gwlist
+          if @doc.gwlist?
+            for data in @doc.gwlist
               @gwlist.push new RuleTarget data
+          return
 
 We also provide the original document so that any other (extra) field is kept.
 
-          @update_doc = =>
-            doc._id = "rule:#{@prefix}"
-            doc.type = 'rule'
-            doc.prefix = @prefix
-            doc.gwlist = ko.toJS @gwlist
-            doc.attrs ?= {}
-            doc.attrs.cdr = @cdr()
-            doc
-
-          return
+        update_doc: ->
+          @doc._id = "rule:#{@prefix}"
+          @doc.type = 'rule'
+          @doc.prefix = @prefix
+          @doc.gwlist = ko.toJS @gwlist
+          @doc.attrs ?= {}
+          @doc.attrs.cdr = @cdr()
+          @doc
 
 Model
 -----
 
-      view = ({value,$root}) ->
+      @view ({value,$root,ko}) ->
         assert value instanceof RuleEntry, 'value should be an instance of RuleEntry'
         {ruleset_db} = $root
         assert ruleset_db?, 'ruleset_db is required'
-
-        @gwlist = value.gwlist
-        @prefix = value.prefix
-        @cdr = value.cdr
 
         @notify = ko.observable ''
 
@@ -94,8 +83,7 @@ Save the record.
 Layout
 ------
 
-      html = ->
-        {p,div,text,label,input,datalist,option,ul,li,button,tag} = teacup
+      html: ({p,div,text,label,input,datalist,option,ul,li,button,tag}) ->
 
         datalist '#gateway', bind: foreach: '$root.gateways', ->
           option bind: value: '$data'
@@ -136,14 +124,4 @@ Extend Knockout witht the `rule-target` component/tag.
 
       {RuleTarget,rule_target} = (require 'ccnq-ko-rule-target') ko
 
-Register the `rule-entry` component/tag.
-
-      ko.components.register tag_name,
-        viewModel: view
-        template: teacup.render html
-
-      {RuleEntry,rule_entry}
-
-    teacup = require 'teacup'
-    teacup.use (require 'teacup-databind')()
     assert = require 'assert'

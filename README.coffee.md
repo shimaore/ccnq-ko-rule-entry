@@ -62,7 +62,7 @@ Remove an existing target.
         @save = =>
           doc = value.update_doc()
 
-          @notify "Saving... (#{doc._rev()})"
+          @notify "Saving... (#{doc._rev})"
 
 Save the record.
 

@@ -83,7 +83,7 @@ Save the record.
 Layout
 ------
 
-      html: ({p,div,text,label,input,datalist,option,ul,li,button,tag}) ->
+      @html ({p,div,text,label,input,datalist,option,ul,li,button,tag}) ->
 
         datalist '#gateway', bind: foreach: '$root.gateways', ->
           option bind: value: '$data'

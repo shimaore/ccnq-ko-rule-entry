@@ -17,10 +17,7 @@ Data
 
           @prefix = @doc.prefix
           @cdr = ko.observable @doc.attrs.cdr
-          @gwlist = ko.observableArray []
-          if @doc.gwlist?
-            for data in @doc.gwlist
-              @gwlist.push new RuleTarget data
+          @gwlist = new RuleGwlist @doc.gwlist
           return
 
 We also provide the original document so that any other (extra) field is kept.
@@ -29,8 +26,7 @@ We also provide the original document so that any other (extra) field is kept.
           @doc._id = "rule:#{@prefix}"
           @doc.type = 'rule'
           @doc.prefix = @prefix
-          @gwlist.remove (x) -> !x._validated()
-          @doc.gwlist = ko.toJS @gwlist
+          @doc.gwlist = @gwlist.toJS()
           @doc.attrs ?= {}
           @doc.attrs.cdr = @cdr()
           @doc
@@ -44,17 +40,6 @@ Model
         assert ruleset_db?, 'ruleset_db is required'
 
         @notify = ko.observable ''
-
-Add a new (empty) target.
-FIXME: should select a default type based on existing targets (e.g. only one `source_registrant` makes sense).
-
-        @add_gw = =>
-          @gwlist.push new RuleTarget {}
-
-Remove an existing target.
-
-        @remove_gw = (target) =>
-          @gwlist.remove target
 
         @save = =>
           doc = value.update_doc()
@@ -77,11 +62,6 @@ Layout
 
       @html ({p,div,text,label,input,datalist,option,ul,li,button,tag}) ->
 
-        datalist '#gateway', bind: foreach: '$root.gateways', ->
-          option bind: value: '$data'
-        datalist '#carrier', bind: foreach: '$root.carriers', ->
-          option bind: value: '$data'
-
         div ->
           p "Add a new prefix (routing)"
           label 'Prefix: '
@@ -99,20 +79,12 @@ Layout
             required:true
         div ->
           text 'Targets: '
-          div bind: foreach: 'gwlist', ->
-            div ->
-
-We use the custom `rule-target` component here.
-FIXME: Is there a way to access `$root` from within the constructor of RuleTarget (in the ccnq-ko-rule-target project) instead of having to pass them along here? (Same question applies to `ruleset_db` in RuleEntry!)
-
-              rule_target '$data'
-              button bind: click: '$parent.remove_gw', 'Remove'
-          button bind: click: 'add_gw', 'Add'
+          rule_gwlist 'gwlist'
           button bind: click: 'save', 'Save'
         div '.log', bind: text: 'notify', '(log)'
 
 Extend Knockout witht the `rule-target` component/tag.
 
-      {RuleTarget,rule_target} = (require 'ccnq-ko-rule-target') ko
+      {RuleGwlist,rule_gwlist} = (require 'ccnq-ko-rule-gwlist') ko
 
     assert = require 'assert'

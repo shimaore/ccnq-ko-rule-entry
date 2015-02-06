@@ -10,7 +10,7 @@ The layout of the record is adapted to the [`tough-rate`](https://github.com/shi
 
       rule_entry = (f) ->
         {tag} = teacup
-        tag tag_name, params: "doc:#{f},$root:$root"
+        tag tag_name, params: "value:#{f},$root:$root"
 
       class RuleEntry
         constructor: (doc) ->

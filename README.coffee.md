@@ -4,7 +4,7 @@ A Knockout Widget for CCNQ(4) `rule` entry
 This Knockout component manages a single `rule` entry as stored in a CCNQ4 `ruleset` database.
 The layout of the record is adapted to the [`tough-rate`](https://github.com/shimaore/tough-rate) LCR routing engine.
 
-    module.exports = (require 'ccnq-ko') 'rule-entry', (ko) ->
+    module.exports = (require 'kow') 'rule-entry', (ko) ->
 
 Data
 ----
@@ -35,7 +35,8 @@ Model
 -----
 
       @view ({value,$root,ko}) ->
-        assert value instanceof RuleEntry, 'value should be an instance of RuleEntry'
+        # assert value instanceof RuleEntry, 'value should be an instance of RuleEntry'
+        assert value?, 'value is required'
         {ruleset_db} = $root
         assert ruleset_db?, 'ruleset_db is required'
 
